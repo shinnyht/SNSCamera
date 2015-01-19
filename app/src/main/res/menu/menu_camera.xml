@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".CameraActivity">
+    <item
+        android:id="@+id/account_settings"
+        android:title="@string/preference_title"
+        android:orderInCategory="2"
+        app:showAsAction="never"/>
+</menu>

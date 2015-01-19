@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SNSCamera</string>
+
+    <!-- preference strings -->
+    <string name="preference_title">Account Settings</string>
+
+    <string name="consumer_key">Consumer Key</string>
+    <string name="consumer_secret">Consumer Secret</string>
+    <string name="access_token">Access Token</string>
+    <string name="access_token_secret">Access Token Secret</string>
+</resources>

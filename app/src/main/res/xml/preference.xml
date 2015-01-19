@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/preference_title">
+        <EditTextPreference
+            android:key="consumer_key"
+            android:summary="Enter Twitter Consumer Key"
+            android:title="@string/consumer_key"
+            android:inputType="text">
+        </EditTextPreference>
+        <EditTextPreference
+            android:key="consumer_secret"
+            android:summary="Enter Twitter Consumer Key Secret"
+            android:title="@string/consumer_secret"
+            android:inputType="text">
+        </EditTextPreference>
+        <EditTextPreference
+            android:key="access_token"
+            android:summary="Enter Twitter Access Token"
+            android:title="@string/access_token"
+            android:inputType="text">
+        </EditTextPreference>
+        <EditTextPreference
+            android:key="access_token_secret"
+            android:summary="Enter Twitter Access Token Secret"
+            android:title="@string/access_token_secret"
+            android:inputType="text">
+        </EditTextPreference>
+    </PreferenceCategory>
+
+</PreferenceScreen>
