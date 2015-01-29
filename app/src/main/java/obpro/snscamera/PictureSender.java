@@ -18,11 +18,12 @@ import twitter4j.auth.AccessToken;
  */
 public class PictureSender extends AsyncTask<String, Void, String> {
     private Activity cameraActivity;
-    private static String consumerKey;
+    private static String consumerKey;      // 認証周りの変数
     private static String consumerSecret;
     private static String accessToken;
     private static String accessTokenSecret;
 
+    // コンストラクタ
     public PictureSender(Activity cameraActivity, Map<String, String> authInfo) {
         this.cameraActivity = cameraActivity;
         this.consumerKey = "Waw5Vsts29RZElTTFGu7H1HcL";
@@ -31,28 +32,32 @@ public class PictureSender extends AsyncTask<String, Void, String> {
         this.accessTokenSecret = "Qzg1hKiopkcKB3IyfWHaYi2bfj4rxDiznwywAjYWuVEOc";
     }
 
+    // Twitter へ投稿
     private void sendPicture(String text, String path) {
-        // send picture to sns
         try {
+            // Twitter インスタンスをnew
             final Twitter twitter = new TwitterFactory().getInstance();
+            // Twitter 認証情報をセット
             twitter.setOAuthConsumer(this.consumerKey, this.consumerSecret);
             twitter.setOAuthAccessToken(new AccessToken(this.accessToken, this.accessTokenSecret));
 
-            UploadedMedia image = twitter.uploadMedia(new File(path));
-            File imgPath = new File(path);
-            if (!imgPath.exists()) {
+            // 画像ファイルが存在することを確認
+            File image = new File(path);
+            if (!image.exists()) {
                 return;
             }
-
-            StatusUpdate statusUpdate = new StatusUpdate(text);
-
+            UploadedMedia uploadedMedia = twitter.uploadMedia(image);
             long[] mediaIdArray = new long[1];
-            mediaIdArray[0] = image.getMediaId();
+            mediaIdArray[0] = uploadedMedia.getMediaId();
 
+            // 投稿内容(text とimage)をセット
+            StatusUpdate statusUpdate = new StatusUpdate(text);
             statusUpdate.setMediaIds(mediaIdArray);
+            // 投稿
             twitter.updateStatus(statusUpdate);
 
-            imgPath.delete();
+            // 画像ファイルを削除
+            image.delete();
 
         } catch (TwitterException e) {
             e.printStackTrace();
@@ -61,9 +66,11 @@ public class PictureSender extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
+        // 第一引数がテキスト文、第二引数が画像ファイルパス
         String text = params[0];
         String path = params[1];
 
+        // Twitter への投稿開始
         sendPicture(text, path);
 
         return "success";
