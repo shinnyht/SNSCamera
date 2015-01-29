@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
@@ -18,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,6 +34,7 @@ public class CameraActivity extends ActionBarActivity {
     private Camera myCamera = null;
     private Preview preview = null;
     private ImageView imgView;
+    private boolean standView;
     private boolean takeFlag;
 
 
@@ -63,14 +68,26 @@ public class CameraActivity extends ActionBarActivity {
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotation) {
+            // stand view
             case Surface.ROTATION_0:
-                degrees = 0; break;
+                degrees = 0;
+                standView = true;
+                break;
+            // side view
             case Surface.ROTATION_90:
-                degrees = 90; break;
+                degrees = 90;
+                standView = false;
+                break;
+            // stand view
             case Surface.ROTATION_180:
-                degrees = 180; break;
+                degrees = 180;
+                standView = true;
+                break;
+            // side view
             case Surface.ROTATION_270:
-                degrees = 270; break;
+                degrees = 270;
+                standView = false;
+                break;
         }
         // calculate preview degrees
         int result;
@@ -109,7 +126,6 @@ public class CameraActivity extends ActionBarActivity {
         preview.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-
                 if (takeFlag) {
                     return true;
                 } else {
@@ -159,6 +175,22 @@ public class CameraActivity extends ActionBarActivity {
         final View layout = layoutInflater.inflate(R.layout.dialog, (ViewGroup)findViewById(R.id.dialog_layout));
         final EditText editText = (EditText)layout.findViewById(R.id.editText);
 
+        byte[] imgBytes = data;
+
+        // adjust image depending on device orientation
+        if (standView) {
+            Bitmap tmp_bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            int width = tmp_bitmap.getWidth();
+            int height = tmp_bitmap.getHeight();
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            Bitmap bmp = Bitmap.createBitmap(tmp_bitmap, 0, 0, width, height, matrix, true);
+            ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOS);
+            imgBytes = byteArrayOS.toByteArray();
+        }
+
+        // save temporary image file
         String imgPath = "";
         try {
             File tmp = File.createTempFile("tmpImage", ".jpg", new File("/sdcard/tmp"));
@@ -166,7 +198,7 @@ public class CameraActivity extends ActionBarActivity {
             imgPath = tmp.getAbsolutePath();
 
             OutputStream outputStream = new FileOutputStream(tmp);
-            outputStream.write(data);
+            outputStream.write(imgBytes);
             outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -174,8 +206,10 @@ public class CameraActivity extends ActionBarActivity {
 
         final String finalImgPath = imgPath;
 
+        // create alert dialog
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setView(layout);
+        // set button "Send"
         alertDialogBuilder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(CameraActivity.this);
@@ -194,6 +228,7 @@ public class CameraActivity extends ActionBarActivity {
                 restartApp();
             }
         });
+        // set button "Cancel"
         alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -209,7 +244,6 @@ public class CameraActivity extends ActionBarActivity {
     public void restartApp() {
         recreate();
     }
-
 
         @Override
     public boolean onCreateOptionsMenu(Menu menu) {
