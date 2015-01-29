@@ -26,10 +26,10 @@ public class PictureSender extends AsyncTask<String, Void, String> {
     // コンストラクタ
     public PictureSender(Activity cameraActivity, Map<String, String> authInfo) {
         this.cameraActivity = cameraActivity;
-        this.consumerKey = "Waw5Vsts29RZElTTFGu7H1HcL";
-        this.consumerSecret = "mnRhaWz2j0fGrEaXI8aJuRsEquWr3xC0zI2zOglDT9vwbDWEEP";
-        this.accessToken = "800619277-qcIHD7jZk1DXAygfAGl64r9E5aGj0qTWIpyCK5IU";
-        this.accessTokenSecret = "Qzg1hKiopkcKB3IyfWHaYi2bfj4rxDiznwywAjYWuVEOc";
+        this.consumerKey = authInfo.get("consumer_key");
+        this.consumerSecret = authInfo.get("consumer_secret");
+        this.accessToken = authInfo.get("access_token");
+        this.accessTokenSecret = authInfo.get("access_token_secret");
     }
 
     // Twitter へ投稿
